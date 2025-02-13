@@ -1,0 +1,17 @@
+services:
+  db:
+    container_name: postgres_wine_cellar
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_DB=wine_cellar
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=Azerty,123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
+
