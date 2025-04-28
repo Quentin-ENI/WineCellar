@@ -26,8 +26,16 @@ public class WebSecurityConfiguration {
         http
             .authorizeHttpRequests(request -> {
                 request
-                    .requestMatchers("/winecellar").permitAll()
+                    // Swagger UI
+                    .requestMatchers("/winecellar/api").permitAll()
+                    .requestMatchers("/winecellar/swagger-ui/*").permitAll()
+                    // API Docs
+                    .requestMatchers("/v3/api-docs").permitAll()
+                    .requestMatchers("/v3/api-docs/*").permitAll()
+                    // JWT Authentication
                     .requestMatchers("/winecellar/auth/**").permitAll()
+                    .requestMatchers("/winecellar").permitAll()
+                    // Ressources
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles").permitAll()
                     .requestMatchers(HttpMethod.POST, "/winecellar/bottles").hasRole("OWNER")
                     .requestMatchers(HttpMethod.PUT, "/winecellar/bottles").hasRole("OWNER")
