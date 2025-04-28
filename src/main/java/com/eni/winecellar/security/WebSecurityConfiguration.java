@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,7 +14,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfigurer {
+public class WebSecurityConfiguration {
 
     @Bean
     UserDetailsManager userDetailsManager(DataSource dataSource) {
@@ -35,6 +34,8 @@ public class WebSecurityConfigurer {
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles").permitAll()
                     .requestMatchers(HttpMethod.POST, "/winecellar/bottles").hasRole("OWNER")
                     .requestMatchers(HttpMethod.PUT, "/winecellar/bottles").hasRole("OWNER")
+                    .requestMatchers(HttpMethod.GET, "/winecellar/bottles/region/*").hasAnyRole("CUSTOMER", "OWNER")
+                    .requestMatchers(HttpMethod.GET, "/winecellar/bottles/color/*").hasAnyRole("CUSTOMER", "OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles/*").hasAnyRole("CUSTOMER", "OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/region/*").hasRole("OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/color/*").hasRole("OWNER")
@@ -49,10 +50,5 @@ public class WebSecurityConfigurer {
         http.httpBasic(Customizer.withDefaults());
 
         return http.build();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

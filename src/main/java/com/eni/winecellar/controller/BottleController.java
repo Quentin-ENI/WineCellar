@@ -49,7 +49,8 @@ public class BottleController {
 
     @GetMapping("/region/{region_id}")
     public ResponseEntity<?> getByRegionId(
-            @PathVariable(name="region_id", required=true) String regionId
+            @PathVariable(name="region_id", required=true) String regionId,
+            Locale locale
     ) {
         try {
             List<Bottle> bottles = bottleService.loadBottlesByRegion(Integer.parseInt(regionId));
@@ -59,7 +60,8 @@ public class BottleController {
                 return ResponseEntity.ok().body(bottles);
             }
         } catch(NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("L'identifiant n'est pas valide");
+            String errorMessage = messageSource.getMessage("region.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
         } catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -67,7 +69,8 @@ public class BottleController {
 
     @GetMapping("/color/{color_id}")
     public ResponseEntity<?> getByColorId(
-            @PathVariable(name="color_id", required=true) String colorId
+            @PathVariable(name="color_id", required=true) String colorId,
+            Locale locale
     ) {
         try {
             List<Bottle> bottles = bottleService.loadBottlesByColor(Integer.parseInt(colorId));
@@ -77,7 +80,8 @@ public class BottleController {
                 return ResponseEntity.ok().body(bottles);
             }
         } catch(NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("L'identifiant n'est pas valide");
+            String errorMessage = messageSource.getMessage("color.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
         } catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
