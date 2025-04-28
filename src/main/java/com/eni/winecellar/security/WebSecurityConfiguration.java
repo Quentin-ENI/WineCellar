@@ -1,36 +1,33 @@
 package com.eni.winecellar.security;
 
+import jakarta.servlet.Filter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    UserDetailsManager userDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        jdbcUserDetailsManager.setUsersByUsernameQuery("select username, password, 1 from wine_cellar_user where username = ?;");
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select username, authority from wine_cellar_user where username = ?;");
-
-        return jdbcUserDetailsManager;
-     }
+    @Autowired
+    private Filter jwtAuthenticationFilter;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-//            .csrf().disable()
             .authorizeHttpRequests(request -> {
                 request
+                    .requestMatchers("/winecellar").permitAll()
+                    .requestMatchers("/winecellar/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles").permitAll()
                     .requestMatchers(HttpMethod.POST, "/winecellar/bottles").hasRole("OWNER")
                     .requestMatchers(HttpMethod.PUT, "/winecellar/bottles").hasRole("OWNER")
@@ -47,7 +44,17 @@ public class WebSecurityConfiguration {
                     .anyRequest().denyAll();
             });
 
-        http.httpBasic(Customizer.withDefaults());
+        http.csrf(csrf -> {
+            csrf.disable();
+        });
+
+        http.authenticationProvider(authenticationProvider);
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.sessionManagement(session -> {
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        });
 
         return http.build();
     }

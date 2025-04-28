@@ -1,9 +1,9 @@
 package com.eni.winecellar.repository;
 
 import com.eni.winecellar.bo.customer.Address;
-import com.eni.winecellar.bo.customer.User;
-import com.eni.winecellar.bo.customer.Owner;
 import com.eni.winecellar.bo.customer.Customer;
+import com.eni.winecellar.bo.customer.Owner;
+import com.eni.winecellar.bo.customer.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

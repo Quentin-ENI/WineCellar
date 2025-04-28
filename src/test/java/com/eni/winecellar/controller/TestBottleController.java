@@ -68,7 +68,7 @@ public class TestBottleController {
         Mockito.when(bottleService.loadBottleById(bottleId)).thenReturn(bottle);
 
         mockMvc.perform(get("/winecellar/bottles/{bottle_id}", bottleId))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class TestBottleController {
         Mockito.when(bottleService.loadBottlesByRegion(regionId)).thenReturn(bottles);
 
         mockMvc.perform(get("/winecellar/bottles/region/{region_id}", 1))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class TestBottleController {
         Mockito.when(bottleService.loadBottlesByColor(colorId)).thenReturn(bottles);
 
         mockMvc.perform(get("/winecellar/bottles/color/{color_id}", 1))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
