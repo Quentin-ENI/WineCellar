@@ -31,6 +31,7 @@ public class TestCustomerRepository {
                 .password("password")
                 .firstname("John")
                 .lastname("Doe")
+                .authority("CUSTOMER")
                 .address(address)
                 .build();
 
@@ -54,6 +55,7 @@ public class TestCustomerRepository {
                 .password("password")
                 .firstname("John")
                 .lastname("Doe")
+                .authority("CUSTOMER")
                 .address(address)
                 .build();
 
@@ -80,6 +82,7 @@ public class TestCustomerRepository {
                 .password("password")
                 .firstname("John")
                 .lastname("Doe")
+                .authority("CUSTOMER")
                 .address(address)
                 .build();
 

@@ -210,6 +210,7 @@ public class TestShoppingCartRepository {
                 .password("MarsAttacks!")
                 .lastname("Portman")
                 .firstname("Natalie")
+                .authority("CUSTOMER")
                 .address(address)
                 .build();
 
@@ -379,6 +380,7 @@ public class TestShoppingCartRepository {
                 .password("ForrestGump")
                 .firstname("Hanks")
                 .lastname("Tom")
+                .authority("CUSTOMER")
                 .address(address)
                 .build();
 

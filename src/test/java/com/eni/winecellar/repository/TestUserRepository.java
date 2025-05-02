@@ -42,6 +42,7 @@ public class TestUserRepository {
                 .password("IndianaJones3")
                 .lastname("Ford")
                 .firstname("Harrison")
+                .authority("CUSTOMER")
                 .build());
 
         users.add(Owner.builder()
@@ -50,6 +51,7 @@ public class TestUserRepository {
                 .lastname("Lucas")
                 .firstname("George")
                 .siret("12345678901234")
+                .authority("OWNER")
                 .build());
 
         Address address = Address.builder()
@@ -63,6 +65,7 @@ public class TestUserRepository {
                 .password("MarsAttacks!")
                 .lastname("Portman")
                 .firstname("Natalie")
+                .authority("CUSTOMER")
                 .address(address)
                 .build());
 
