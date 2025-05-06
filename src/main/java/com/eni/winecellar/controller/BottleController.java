@@ -17,31 +17,52 @@ import java.util.Locale;
 @RequestMapping("/winecellar/bottles")
 public class BottleController {
     private BottleService bottleService;
-
     private MessageSource messageSource;
 
     @GetMapping
-    public ResponseEntity<?> get() {
+    public ResponseEntity<ApiResponse<List<Bottle>>> get(
+            Locale locale
+    ) {
         List<Bottle> bottles = bottleService.loadBottles();
 
         if (bottles.isEmpty()) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.ok().body(bottles);
+            String message = messageSource.getMessage("bottle.get.list.successful", null, locale);
+            return ResponseEntity.ok().body(
+                    new ApiResponse<>(
+                            ApiResponse.IS_SUCCESSFUL,
+                            message,
+                            bottles
+                    )
+            );
         }
     }
 
     @GetMapping("/{bottle_id}")
-    public ResponseEntity<?> getById(
+    public ResponseEntity<ApiResponse<Bottle>> getById(
             @PathVariable(name="bottle_id", required=true) String bottleId,
             Locale locale
     ) {
         try {
             final Bottle bottle = bottleService.loadBottleById(Integer.parseInt(bottleId));
-            return ResponseEntity.ok(bottle);
+            String message = messageSource.getMessage("bottle.get.by-id.successful", null, locale);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            ApiResponse.IS_SUCCESSFUL,
+                            message,
+                            bottle
+                    )
+            );
         } catch (NumberFormatException e) {
-            String errorMessage = messageSource.getMessage("bottle.id.not-valid", null, locale);
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
+            String errorMessage = messageSource.getMessage("bottle.validation.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    new ApiResponse<>(
+                            ApiResponse.NOT_SUCCESSFUL,
+                            errorMessage,
+                            null
+                    )
+            );
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

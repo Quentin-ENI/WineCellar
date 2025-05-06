@@ -40,13 +40,15 @@ public class TestBottleController {
         mockMvc.perform(get("/winecellar/bottles"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(bottles.size()))
-                .andExpect(jsonPath("$[0].name").value("Blanc du DOMAINE ENI Editions"))
-                .andExpect(jsonPath("$[0].vintage").value("2022"))
-                .andExpect(jsonPath("$[0].price").value(23.95))
-                .andExpect(jsonPath("$[0].quantity").value(1298))
-                .andExpect(jsonPath("$[0].region.name").value("Pays de la Loire"))
-                .andExpect(jsonPath("$[0].color.name").value("Blanc"));
+                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("message").value("Bottles retrieved successfully"))
+                .andExpect(jsonPath("data.length()").value(bottles.size()))
+                .andExpect(jsonPath("data[0].name").value("Blanc du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data[0].vintage").value("2022"))
+                .andExpect(jsonPath("data[0].price").value(23.95))
+                .andExpect(jsonPath("data[0].quantity").value(1298))
+                .andExpect(jsonPath("data[0].region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data[0].color.name").value("Blanc"));
     }
 
     @Test
