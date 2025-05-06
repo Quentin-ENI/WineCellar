@@ -69,7 +69,7 @@ public class BottleController {
     }
 
     @GetMapping("/region/{region_id}")
-    public ResponseEntity<?> getByRegionId(
+    public ResponseEntity<ApiResponse<List<Bottle>>> getByRegionId(
             @PathVariable(name="region_id", required=true) String regionId,
             Locale locale
     ) {
@@ -78,18 +78,31 @@ public class BottleController {
             if (bottles.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.ok().body(bottles);
+                String message = messageSource.getMessage("bottle.get.list.successful", null, locale);
+                return ResponseEntity.ok().body(
+                        new ApiResponse<>(
+                                ApiResponse.IS_SUCCESSFUL,
+                                message,
+                                bottles
+                        )
+                );
             }
         } catch(NumberFormatException e) {
-            String errorMessage = messageSource.getMessage("region.id.not-valid", null, locale);
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
+            String errorMessage = messageSource.getMessage("region.validation.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    new ApiResponse<>(
+                            ApiResponse.NOT_SUCCESSFUL,
+                            errorMessage,
+                            null
+                    )
+            );
         } catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/color/{color_id}")
-    public ResponseEntity<?> getByColorId(
+    public ResponseEntity<ApiResponse<List<Bottle>>> getByColorId(
             @PathVariable(name="color_id", required=true) String colorId,
             Locale locale
     ) {
@@ -98,11 +111,24 @@ public class BottleController {
             if (bottles.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.ok().body(bottles);
+                String message = messageSource.getMessage("bottle.get.list.successful", null, locale);
+                return ResponseEntity.ok().body(
+                        new ApiResponse<>(
+                                ApiResponse.IS_SUCCESSFUL,
+                                message,
+                                bottles
+                        )
+                );
             }
         } catch(NumberFormatException e) {
-            String errorMessage = messageSource.getMessage("color.id.not-valid", null, locale);
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
+            String errorMessage = messageSource.getMessage("color.validation.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    new ApiResponse<>(
+                            ApiResponse.NOT_SUCCESSFUL,
+                            errorMessage,
+                            null
+                    )
+            );
         } catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

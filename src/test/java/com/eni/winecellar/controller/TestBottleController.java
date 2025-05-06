@@ -158,8 +158,20 @@ public class TestBottleController {
                 .toList();
         Mockito.when(bottleService.loadBottlesByRegion(regionId)).thenReturn(bottles);
 
+        String expectedMessage = "Bottles retrieved successfully";
+
         mockMvc.perform(get("/winecellar/bottles/region/{region_id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data.length()").value(bottles.size()))
+                .andExpect(jsonPath("data[0].name").value("Blanc du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data[0].vintage").value("2022"))
+                .andExpect(jsonPath("data[0].price").value(23.95))
+                .andExpect(jsonPath("data[0].quantity").value(1298))
+                .andExpect(jsonPath("data[0].region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data[0].color.name").value("Blanc"));
     }
 
     @Test
@@ -172,8 +184,20 @@ public class TestBottleController {
                 .toList();
         Mockito.when(bottleService.loadBottlesByRegion(regionId)).thenReturn(bottles);
 
+        String expectedMessage = "Bottles retrieved successfully";
+
         mockMvc.perform(get("/winecellar/bottles/region/{region_id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data.length()").value(bottles.size()))
+                .andExpect(jsonPath("data[0].name").value("Blanc du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data[0].vintage").value("2022"))
+                .andExpect(jsonPath("data[0].price").value(23.95))
+                .andExpect(jsonPath("data[0].quantity").value(1298))
+                .andExpect(jsonPath("data[0].region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data[0].color.name").value("Blanc"));
     }
 
     @Test
@@ -193,7 +217,9 @@ public class TestBottleController {
         String expectedMessage = "Region id is not valid";
         mockMvc.perform(get("/winecellar/bottles/region/{region_id}", "azerty"))
                 .andExpect(status().isNotAcceptable())
-                .andExpect(content().string(expectedMessage));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
     }
 
     @Test
@@ -231,8 +257,20 @@ public class TestBottleController {
                 .toList();
         Mockito.when(bottleService.loadBottlesByColor(colorId)).thenReturn(bottles);
 
+        String expectedMessage = "Bottles retrieved successfully";
+
         mockMvc.perform(get("/winecellar/bottles/color/{color_id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data.length()").value(bottles.size()))
+                .andExpect(jsonPath("data[0].name").value("Rouge du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data[0].vintage").value("2018"))
+                .andExpect(jsonPath("data[0].price").value(11.45))
+                .andExpect(jsonPath("data[0].quantity").value(987))
+                .andExpect(jsonPath("data[0].region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data[0].color.name").value("Rouge"));
     }
 
     @Test
@@ -245,8 +283,20 @@ public class TestBottleController {
                 .toList();
         Mockito.when(bottleService.loadBottlesByColor(colorId)).thenReturn(bottles);
 
+        String expectedMessage = "Bottles retrieved successfully";
+
         mockMvc.perform(get("/winecellar/bottles/color/{color_id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data.length()").value(bottles.size()))
+                .andExpect(jsonPath("data[0].name").value("Rouge du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data[0].vintage").value("2018"))
+                .andExpect(jsonPath("data[0].price").value(11.45))
+                .andExpect(jsonPath("data[0].quantity").value(987))
+                .andExpect(jsonPath("data[0].region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data[0].color.name").value("Rouge"));
     }
 
     @Test
@@ -266,7 +316,9 @@ public class TestBottleController {
         String expectedMessage = "Color id is not valid";
         mockMvc.perform(get("/winecellar/bottles/color/{color_id}", "azerty"))
                 .andExpect(status().isNotAcceptable())
-                .andExpect(content().string(expectedMessage));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
     }
 
     @Test
