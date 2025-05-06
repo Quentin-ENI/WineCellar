@@ -19,8 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -341,9 +340,6 @@ public class TestBottleController {
     @WithAnonymousUser
     void test_save_whenBodyValidUserIsAnonymous_thenReturn403() throws Exception {
         Bottle bottle = bottleData();
-        Bottle bottleDB = bottleData();
-        bottleDB.setId(1);
-        Mockito.when(bottleService.add(bottle)).thenReturn(bottleDB);
 
         mockMvc.perform(
                     post("/winecellar/bottles", bottle)
@@ -357,9 +353,6 @@ public class TestBottleController {
     @WithMockUser(roles={"CUSTOMER"})
     void test_save_whenBodyValidUserIsCustomer_thenReturn403() throws Exception {
         Bottle bottle = bottleData();
-        Bottle bottleDB = bottleData();
-        bottleDB.setId(1);
-        Mockito.when(bottleService.add(bottle)).thenReturn(bottleDB);
 
         mockMvc.perform(
                 post("/winecellar/bottles", bottle)
@@ -417,6 +410,116 @@ public class TestBottleController {
     @Test
     @WithMockUser(roles={"OWNER"})
     void test_save_whenSaveThrowsExceptionAndUserIsOwner_thenReturn406() throws Exception {
+        Bottle bottle = bottleData();
+        Mockito.when(bottleService.add(bottle)).thenThrow(new RuntimeException());
+
+        String expectedMessage = "Body is not valid";
+        mockMvc.perform(
+                        post("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotAcceptable())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
+    }
+
+    // HTTP : PUT /bottles
+    @Test
+    @WithAnonymousUser
+    void test_update_whenBodyValidUserIsAnonymous_thenReturn403() throws Exception {
+        Bottle bottle = bottleData();
+
+        mockMvc.perform(
+                        put("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles={"CUSTOMER"})
+    void test_update_whenBodyValidUserIsCustomer_thenReturn403() throws Exception {
+        Bottle bottle = bottleData();
+
+        mockMvc.perform(
+                        put("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_update_whenBodyValidUserIsOwner_thenReturn200() throws Exception {
+        Bottle bottle = bottleData();
+        bottle.setId(1);
+        Bottle bottleDB = bottleData();
+        bottleDB.setId(1);
+        Mockito.when(bottleService.add(bottle)).thenReturn(bottleDB);
+
+        String expectedMessage = "Bottle saved successfully";
+
+        mockMvc.perform(
+                        put("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data.id").value(1))
+                .andExpect(jsonPath("data.name").value("Rouge du DOMAINE ENI Ecole"))
+                .andExpect(jsonPath("data.vintage").value("2018"))
+                .andExpect(jsonPath("data.price").value(11.45))
+                .andExpect(jsonPath("data.quantity").value(987))
+                .andExpect(jsonPath("data.region.name").value("Nouvelle Aquitaine"))
+                .andExpect(jsonPath("data.color.name").value("Rouge"));
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_update_whenBodyNotValidAndUserIsOwner_thenReturn406() throws Exception {
+        Bottle bottle = bottleData();
+        bottle.setId(1);
+        bottle.setName(null);
+
+        String expectedMessage = "Error(s) : Name is required\n";
+        mockMvc.perform(
+                        put("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotAcceptable())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_update_whenBottleIdIsNullAndUserIsOwner_thenReturn406() throws Exception {
+        Bottle bottle = bottleData();
+        bottle.setId(null);
+
+        String expectedMessage = "Body is not valid";
+        mockMvc.perform(
+                        put("/winecellar/bottles", bottle)
+                                .content(objectMapper.writeValueAsString(bottle))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotAcceptable())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_update_whenSaveThrowsExceptionAndUserIsOwner_thenReturn406() throws Exception {
         Bottle bottle = bottleData();
         Mockito.when(bottleService.add(bottle)).thenThrow(new RuntimeException());
 

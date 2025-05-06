@@ -171,18 +171,42 @@ public class BottleController {
         }
     }
 
+    @Operation(summary = "Put bottle", description = "Put bottle")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping
-    public ResponseEntity<?> update(
-            @Valid @RequestBody Bottle bottle
+    public ResponseEntity<ApiResponse<Bottle>> update(
+            @Valid @RequestBody Bottle bottle,
+            Locale locale
     ) {
         try {
             if (bottle == null || bottle.getId() == null || bottle.getId() <= 0) {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("La bouteille et l'identifiant sont obligatoires");
+                String errorMessage = messageSource.getMessage("bottle.validation.body.not-valid", null, locale);
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                        new ApiResponse<>(
+                                ApiResponse.NOT_SUCCESSFUL,
+                                errorMessage,
+                                bottle
+                        )
+                );
             }
-            bottleService.add(bottle);
-            return ResponseEntity.ok(bottle);
+            bottle = bottleService.add(bottle);
+            String message = messageSource.getMessage("bottle.save.successful", null, locale);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            ApiResponse.IS_SUCCESSFUL,
+                            message,
+                            bottle
+                    )
+            );
         } catch(RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+            String errorMessage = messageSource.getMessage("bottle.validation.body.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    new ApiResponse<>(
+                            ApiResponse.NOT_SUCCESSFUL,
+                            errorMessage,
+                            bottle
+                    )
+            );
         }
     }
 
