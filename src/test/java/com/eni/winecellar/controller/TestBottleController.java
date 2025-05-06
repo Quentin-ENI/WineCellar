@@ -40,7 +40,7 @@ public class TestBottleController {
         mockMvc.perform(get("/winecellar/bottles"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("success").value(true))
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
                 .andExpect(jsonPath("message").value("Bottles retrieved successfully"))
                 .andExpect(jsonPath("data.length()").value(bottles.size()))
                 .andExpect(jsonPath("data[0].name").value("Blanc du DOMAINE ENI Editions"))
@@ -83,30 +83,34 @@ public class TestBottleController {
         mockMvc.perform(get("/winecellar/bottles/{bottle_id}", bottleId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Blanc du DOMAINE ENI Editions"))
-                .andExpect(jsonPath("$.vintage").value("2022"))
-                .andExpect(jsonPath("$.price").value(23.95))
-                .andExpect(jsonPath("$.quantity").value(1298))
-                .andExpect(jsonPath("$.region.name").value("Pays de la Loire"))
-                .andExpect(jsonPath("$.color.name").value("Blanc"));
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value("Bottle retrieved succesfully"))
+                .andExpect(jsonPath("data.name").value("Blanc du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data.vintage").value("2022"))
+                .andExpect(jsonPath("data.price").value(23.95))
+                .andExpect(jsonPath("data.quantity").value(1298))
+                .andExpect(jsonPath("data.region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data.color.name").value("Blanc"));
     }
 
     @Test
     @WithMockUser(roles={"OWNER"})
     void test_getById_whenBottleIsPresentAndUserIsOwner_thenReturnOk() throws Exception {
-        Bottle bottle = bottleData().get(0);
+        Bottle bottle = bottleData().getFirst();
         int bottleId = 1;
         Mockito.when(bottleService.loadBottleById(bottleId)).thenReturn(bottle);
 
         mockMvc.perform(get("/winecellar/bottles/{bottle_id}", bottleId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Blanc du DOMAINE ENI Editions"))
-                .andExpect(jsonPath("$.vintage").value("2022"))
-                .andExpect(jsonPath("$.price").value(23.95))
-                .andExpect(jsonPath("$.quantity").value(1298))
-                .andExpect(jsonPath("$.region.name").value("Pays de la Loire"))
-                .andExpect(jsonPath("$.color.name").value("Blanc"));
+                .andExpect(jsonPath("success").value(ApiResponse.IS_SUCCESSFUL))
+                .andExpect(jsonPath("message").value("Bottle retrieved succesfully"))
+                .andExpect(jsonPath("data.name").value("Blanc du DOMAINE ENI Editions"))
+                .andExpect(jsonPath("data.vintage").value("2022"))
+                .andExpect(jsonPath("data.price").value(23.95))
+                .andExpect(jsonPath("data.quantity").value(1298))
+                .andExpect(jsonPath("data.region.name").value("Pays de la Loire"))
+                .andExpect(jsonPath("data.color.name").value("Blanc"));
     }
 
     @Test
@@ -125,7 +129,8 @@ public class TestBottleController {
         String expectedMessage = "Bottle id is not valid";
         mockMvc.perform(get("/winecellar/bottles/{bottle_id}", "azerty"))
                 .andExpect(status().isNotAcceptable())
-                .andExpect(content().string(expectedMessage));
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage));
     }
 
     // HTTP : GET /bottles/region/{region_id}
