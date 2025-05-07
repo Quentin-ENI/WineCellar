@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Integer> {
+
 //    @Query("SELECT sc FROM ShoppingCart sc WHERE sc.customer.username = :customerUsername AND sc.orderNumber IS NULL")
 //    List<ShoppingCart> findByCustomerUsername(@Param("customerUsername") String customerUsername, @Param("orderNumber") String OrderNumber);
 
