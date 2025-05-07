@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -533,6 +536,63 @@ public class TestBottleController {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
                 .andExpect(jsonPath("message").value(expectedMessage));
+    }
+
+    // HTTP : DELETE /bottles/{bottle_id}
+    @Test
+    @WithAnonymousUser
+    void test_delete_whenUserIsAnonymous_thenReturn403() throws Exception {
+        int bottleId = 1;
+
+        mockMvc.perform(delete("/winecellar/bottles/{bottle_id}", bottleId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles={"CUSTOMER"})
+    void test_delete_whenUserIsCustomer_thenReturn403() throws Exception {
+        int bottleId = 1;
+
+        mockMvc.perform(delete("/winecellar/bottles/{bottle_id}", bottleId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_delete_whenUserIsOwner_thenReturn200() throws Exception {
+        Integer bottleId = 1;
+        doNothing().when(bottleService).delete(bottleId);
+
+        mockMvc.perform(delete("/winecellar/bottles/{bottle_id}", bottleId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_delete_whenThrowsNumberFormatExceptionAndUserIsOwner_thenReturn406() throws Exception {
+        Integer bottleId = 1;
+
+        doThrow(NumberFormatException.class).when(bottleService).delete(bottleId);
+
+        String expectedMessage = "Bottle id is not valid";
+
+        mockMvc.perform(delete("/winecellar/bottles/{bottle_id}", bottleId))
+                .andExpect(status().isNotAcceptable())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("success").value(ApiResponse.NOT_SUCCESSFUL))
+                .andExpect(jsonPath("message").value(expectedMessage))
+                .andExpect(jsonPath("data").value(bottleId));
+    }
+
+    @Test
+    @WithMockUser(roles={"OWNER"})
+    void test_delete_whenThrowsRuntimeExceptionExceptionAndUserIsOwner_thenReturn404() throws Exception {
+        Integer bottleId = 1;
+
+        doThrow(RuntimeException.class).when(bottleService).delete(bottleId);
+
+        mockMvc.perform(delete("/winecellar/bottles/{bottle_id}", bottleId))
+                .andExpect(status().isNotFound());
     }
 
     // DATA

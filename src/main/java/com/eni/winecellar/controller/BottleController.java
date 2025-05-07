@@ -210,15 +210,33 @@ public class BottleController {
         }
     }
 
+    @Operation(summary = "Delete bottle", description = "Delete bottle")
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{bottle_id}")
-    public ResponseEntity<?> delete(
-            @PathVariable(name="bottle_id", required=true) String bottleId
+    public ResponseEntity<ApiResponse<Integer>> delete(
+            @PathVariable(name="bottle_id", required=true) String bottleId,
+            Locale locale
     ) {
+        Integer integerBottleId = Integer.parseInt(bottleId);
         try {
-            bottleService.delete(Integer.parseInt(bottleId));
-            return ResponseEntity.ok("Bouteille (" + bottleId + ") est supprimée");
+            bottleService.delete(integerBottleId);
+            String message = messageSource.getMessage("bottle.delete.successful", new String[]{bottleId}, locale);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            ApiResponse.IS_SUCCESSFUL,
+                            message,
+                            integerBottleId
+                    )
+            );
         } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("L'identifiant n'est pas valide");
+            String errorMessage = messageSource.getMessage("bottle.validation.id.not-valid", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    new ApiResponse<>(
+                            ApiResponse.NOT_SUCCESSFUL,
+                            errorMessage,
+                            integerBottleId
+                    )
+            );
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
