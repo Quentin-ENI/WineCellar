@@ -1,5 +1,6 @@
 package com.eni.winecellar.exception;
 
+import com.eni.winecellar.controller.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,18 @@ public class AppExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(value={Exception.class})
-    public ResponseEntity<String> handleException(Exception exception) {
-        return new ResponseEntity<String>(exception.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<ApiResponse<String>> handleException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                new ApiResponse<>(
+                        ApiResponse.NOT_SUCCESSFUL,
+                        exception.getMessage(),
+                        null
+                )
+        );
     }
 
     @ExceptionHandler(value={MethodArgumentNotValidException.class})
-    public ResponseEntity<String> handleMethodArgumentNotValidException(
+    public ResponseEntity<ApiResponse<String>> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException exception,
         Locale locale
     ) {
@@ -40,6 +47,12 @@ public class AppExceptionHandler {
                     }
             );
 
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(message);
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                new ApiResponse<>(
+                        ApiResponse.NOT_SUCCESSFUL,
+                        message,
+                        null
+                )
+        );
     }
 }

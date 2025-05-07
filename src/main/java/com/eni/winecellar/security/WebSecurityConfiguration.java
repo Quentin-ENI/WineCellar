@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -42,6 +43,7 @@ public class WebSecurityConfiguration {
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles/region/*").hasAnyRole("CUSTOMER", "OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles/color/*").hasAnyRole("CUSTOMER", "OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/bottles/*").hasAnyRole("CUSTOMER", "OWNER")
+                    .requestMatchers(HttpMethod.DELETE, "/winecellar/bottles/*").hasRole("OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/region/*").hasRole("OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/color/*").hasRole("OWNER")
                     .requestMatchers(HttpMethod.GET, "/winecellar/shopping_carts/*").hasAnyRole("CUSTOMER", "OWNER")
@@ -52,9 +54,7 @@ public class WebSecurityConfiguration {
                     .anyRequest().denyAll();
             });
 
-        http.csrf(csrf -> {
-            csrf.disable();
-        });
+        http.csrf(AbstractHttpConfigurer::disable);
 
         http.authenticationProvider(authenticationProvider);
 
